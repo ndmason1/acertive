@@ -1,2 +1,3 @@
 # acertive
-An SSL certificate monitor for Linux
+
+An SSL certificate monitor for Linux (under construction)
