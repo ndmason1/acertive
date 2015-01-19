@@ -1,3 +1,13 @@
+# certificate formats
+*.crt
+*.pem
+*.cer
+*.der
+*.p7b
+*.p7c
+*.p12
+*.pfx
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
