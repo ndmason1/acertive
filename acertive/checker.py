@@ -3,13 +3,14 @@ from  cert import loadCert
 from date_util import parseUTCDate, expiresInDays
 import notif
 
+
 def checkTrackedCerts():
 	pass
 
-def checkCert(fname):
-	cert = loadCert(fname)
+def checkCert(path):
+	cert = loadCert(path)
 	if expiresInDays(parseUTCDate(cert.get_notAfter()),400):
-		notif.writeLogNotification(notif.makeNotification(cert,fname))
+		notif.notify(cert,path)
 	
 
 if __name__=='__main__':
