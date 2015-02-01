@@ -9,5 +9,8 @@ def notifRecips():
 def notifMethod():
 	return conf.get('MAIN', 'notifyMethod')
 
+def storedCertsPath():
+	return conf.get('MAIN', 'storedCertsFile')
+
 conf = SafeConfigParser()
 conf.read('../config.cfg')
