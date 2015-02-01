@@ -8,6 +8,10 @@
 *.p12
 *.pfx
 
+# sublime text project files
+*.sublime-project
+*.sublime-workspace
+
 # main config
 config.cfg
 
