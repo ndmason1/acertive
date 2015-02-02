@@ -6,6 +6,7 @@ import sys
 import traceback 
 import syslog
 
+
 def notify(cert, path):	
 	if conf.notifMethod() == 'log':
 		logNotify(cert, path)
