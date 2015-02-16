@@ -5,12 +5,13 @@ import dateparser
 import notif
 
 def loadCert(fname):
+	print "loading cert: " + fname
 	if (fname[-3:] in ['p12', 'pfx']):
 		cert = loadP12(fname)		
 	elif (fname[-3:] in ['pem', 'crt']): # these could be .cer as well?
-		cert = loadPem(argv[1])			
+		cert = loadPem(fname)			
 	elif (fname[-3:] in ['der', 'cer']):
-		cert = loadDer(argv[1])
+		cert = loadDer(fname)
 	return cert
 
 def loadDer(fname):
