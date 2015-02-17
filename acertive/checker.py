@@ -2,7 +2,7 @@ import conf
 import os
 from sys import argv
 from  cert import loadCert
-from date_util import parseUTCDate, expiresInDays
+from date_util import *
 from notif import notify
 import json
 import warnings
@@ -65,11 +65,10 @@ def checkCert(path):
 	:param path: location of certificate
 	"""
 	cert = loadCert(path)
-	days = 400 # TODO separate based on comments below
-	# here, days is an expiration threshold
-	if expiresInDays(parseUTCDate(cert.get_notAfter()),days): 
-		# here, days is the exact number of days until expiration for this cert
-		notify(cert,path,days)
+	days = 400 # TODO extract from certs file
+	expireDate = parseUTCDate(cert.get_notAfter())
+	if expiresInDays(expireDate,days): 		
+		notify(cert,path,daysUntilExpiration(expireDate))
 	
 
 if __name__=='__main__':
