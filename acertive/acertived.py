@@ -62,7 +62,7 @@ def run():
 	}
 	with context:
 		while(True):
-			syslog.syslog("checking certs")
+			syslog.syslog('checking certs')
 			time.sleep(24*60*60)
 
 if __name__=='__main__':
