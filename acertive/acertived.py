@@ -7,6 +7,9 @@ import syslog
 import time
 
 def createPIDFile():
+	"""	
+	Create a PID file to indicate the daemon is running
+	"""
 	pid = str(os.getpid())
 	
 	if os.path.isfile(pidFile):
@@ -16,15 +19,37 @@ def createPIDFile():
 	# 	file(pidFile, 'w').write(pid+'\n')
 
 def deletePIDFile():
+	"""	
+	Remove the PID file to indicate the daemon is not running
+	"""
 	os.unlink(pidFile)
 
 def setUp():
+	"""	
+	Set things up before entering DaemonContext
+	"""
 	createPIDFile()
 
 def tearDown(signum, frame):
+	"""	
+	Clean things up after leaving DaemonContext
+
+	Conforms with the signal handler interface specified at 
+	https://docs.python.org/2/library/signal.html
+
+	TODO: fix this
+
+	:param signum: signal number to catch
+	:param frame: current stack frame	
+	"""
 	deletePIDFile()
 
 def run():
+	"""	
+	Start the daemon process, which wakes once per day to check all the tracked 
+	certificates
+
+	"""
 	setUp()
 
 	print "running as daemon, PID = " + str(os.getpid())

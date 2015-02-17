@@ -10,7 +10,8 @@ import warnings
 
 
 def trackCert(path, weeklyThreshold=30, dailyThreshold=7):
-	"""	Add this certificate to the tracked certs file.
+	"""	
+	Add this certificate to the tracked certs file.
 
 	:param path: location of certificate
 	:param weeklyThreshold: number of days from expiration to notify weekly
@@ -26,7 +27,8 @@ def trackCert(path, weeklyThreshold=30, dailyThreshold=7):
 									'daily': dailyThreshold}) + "\n")
 
 def untrackCert(path):
-	"""	Remove this certificate from the tracked certs file.
+	"""	
+	Remove this certificate from the tracked certs file.
 
 	:param path: location of certificate
 	"""
@@ -43,7 +45,8 @@ def untrackCert(path):
 	certsFile.close()
 
 def checkTrackedCerts():
-	"""	Check each tracked certificate for expiration.
+	"""	
+	Check each tracked certificate for expiration.
 	"""
 	certsFile = open(conf.storedCertsPath(), 'r')
 	lines = certsFile.readlines()	
@@ -55,8 +58,9 @@ def checkTrackedCerts():
 
 
 def checkCert(path):
-	"""	Check a certificate for expiration. If the cert is within a notification
-		threshold, send a notification.
+	"""	
+	Check a certificate for expiration. If the cert is within a notification
+	threshold, send a notification.
 
 	:param path: location of certificate
 	"""
