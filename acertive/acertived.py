@@ -5,6 +5,7 @@ import signal
 import sys
 import syslog
 import time
+import checker
 
 def createPIDFile():
 	"""	
@@ -53,16 +54,18 @@ def run():
 	setUp()
 
 	print "running as daemon, PID = " + str(os.getpid())
+	checker.checkTrackedCerts()
 	context = daemon.DaemonContext(
 		pidfile=lockfile.FileLock(pidFile)
 		)
-	context.signal_map = {
-		signal.SIGTERM: tearDown,
-		signal.SIGHUP: 'terminate'
-	}
+	# context.signal_map = {
+	# 	signal.SIGTERM: tearDown,
+	# 	signal.SIGHUP: 'terminate'
+	# }
 	with context:
 		while(True):
 			syslog.syslog('checking certs')
+			checker.checkTrackedCerts()
 			time.sleep(24*60*60)
 
 if __name__=='__main__':

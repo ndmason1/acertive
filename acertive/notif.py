@@ -7,18 +7,19 @@ import traceback
 import syslog
 
 
-def notify(cert, path):	
+def notify(cert, path, days):	
 	"""	
 	Send a notification for a soon-to-expire certificate based on the currently 
 	configured notification method
 
 	:param cert: X509 object corresponding to certificate
 	:param path: absolute path of certificate
+	:param days: duration in days until expiration
 	"""
 	if conf.notifMethod() == 'log':
-		logNotify(cert, path)
+		logNotify(cert, path, days)
 	elif conf.notifMethod == 'mail':
-		mailNotify(cert, path)
+		mailNotify(cert, path, days)
 
 
 def logNotify(cert, path, days):

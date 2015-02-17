@@ -65,8 +65,11 @@ def checkCert(path):
 	:param path: location of certificate
 	"""
 	cert = loadCert(path)
-	if expiresInDays(parseUTCDate(cert.get_notAfter()),400):
-		notify(cert,path)
+	days = 400 # TODO separate based on comments below
+	# here, days is an expiration threshold
+	if expiresInDays(parseUTCDate(cert.get_notAfter()),days): 
+		# here, days is the exact number of days until expiration for this cert
+		notify(cert,path,days)
 	
 
 if __name__=='__main__':
