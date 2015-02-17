@@ -14,8 +14,9 @@ setup(
     license = "GPLv2",
     keywords = "example documentation tutorial",
     url = "https://github.com/ndmason1/acertive",
-    packages=['an_example_pypi_project', 'tests'], #fix
-    long_description=read('README'),
+    packages=["acertive"],
+    long_description=read("README.md"),
+    install_requires=["pyopenssl"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities"
