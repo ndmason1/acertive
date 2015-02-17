@@ -1,3 +1,4 @@
+import os
 from ConfigParser import SafeConfigParser
 
 #TODO add SMTP server as config item
@@ -29,4 +30,5 @@ def storedCertsPath():
 	return conf.get('MAIN', 'storedCertsFile')
 
 conf = SafeConfigParser()
-conf.read('../config.cfg')
+app_dir = os.path.dirname(os.path.realpath(__file__))[0:-8]
+conf.read(app_dir + 'config.cfg')
