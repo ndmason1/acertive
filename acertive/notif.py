@@ -21,18 +21,20 @@ def notify(cert, path):
 		mailNotify(cert, path)
 
 
-def logNotify(cert, path):
+def logNotify(cert, path, days):
 	"""	
 	Send a notification to syslog
 
 	:param cert: X509 object corresponding to certificate
 	:param path: absolute path of certificate
+	:param days: duration in days until expiration
 	"""
-	
-	notif = ' checking certificate ' + os.path.abspath(path)
-	notif += ' issued for ' + cert.get_issuer().commonName
-	print notif	
-	syslog.syslog(notif)	
+
+	message = 'certificate from file: ' + os.path.abspath(path)
+	message += ' (' + cert.get_issuer().commonName + ') EXPIRES in '
+	message += str(days) + ' days!'
+	print message	
+	syslog.syslog(message)	
 
 def mailNotify(cert, path, days):
 	"""	
@@ -52,7 +54,7 @@ def mailNotify(cert, path, days):
 	message += '[' + str(datetime.datetime.now()) + ']\n'
 	message += 'Certificate from file: ' + os.path.abspath(path) + '\n'
 	message += 'Issued for :' + cert.get_issuer().commonName + '\n\n'
-	message += 'This certificate is set to EXPIRE in ' + days + ' days!\n'
+	message += 'This certificate is set to EXPIRE in ' + str(days) + ' days!\n'
 	message += 'Please consider renewing this certificate soon.\n'
 
 	try:
