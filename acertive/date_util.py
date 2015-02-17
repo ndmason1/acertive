@@ -7,7 +7,17 @@ def parseUTCDate(utcStr):
 
 	:param utcStr: UTC timestamp
 	"""
-	return dateutil.parser.parse(utcStr)
+	return dateutil.parser.parse(utcStr,ignoretz=True)
+
+def daysUntilExpiration(dateTime):
+	"""	
+	Returns number of days until the given dateTime
+
+	:param dateTime: datetime object representing an expiry date
+	"""	
+	diff = dateTime - datetime.today()
+	return diff.days
+
 	
 def expiresInDays(dateTime, numDays):
 	"""	
@@ -17,14 +27,12 @@ def expiresInDays(dateTime, numDays):
 	:param dateTime: datetime object representing an expiry date
 	:param numDays: duration in days from now after which the cert corresponding
 		to the given datetime is considered expired
-	"""
-	diff = dateTime - datetime.now(dateutil.tz.tzutc())
-	return diff.total_seconds() <= numDays*24*60*60
+	"""	
+	diff = dateTime - datetime.today()
+	return diff.days <= numDays
 	
 
 if __name__=='__main__':
-	
-	d1 = parseUTCDate('20150407070726Z')
-	d2 = parseUTCDate('20150120070726Z')	
-	print expiresInDays(d1,1000)
+	d1 = parseUTCDate('20150218230726Z')	
+	print 'days until exp: ' + str(daysUntilExpiration(d1))
 	
