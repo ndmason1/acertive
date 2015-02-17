@@ -8,7 +8,7 @@ def loadCert(fname):
 	"""	
 	Load an X.509 certificate from the specified file
 
-	:param fname: path of cert file
+	:param fname: absolute path of cert file
 	"""
 	if (fname[-3:] in ['p12', 'pfx']):
 		cert = loadP12(fname)		
@@ -22,7 +22,7 @@ def loadDer(fname):
 	"""	
 	Load a DER-formatted X.509 certificate from the specified file
 
-	:param fname: path of cert file
+	:param fname: absolute path of cert file
 	"""
 	with open(fname,'rb') as der:
 		cert = crypto.load_certificate(crypto.FILETYPE_ASN1, der.read())
@@ -33,7 +33,7 @@ def loadPem(fname):
 	"""	
 	Load a PEM-formatted X.509 certificate from the specified file
 
-	:param fname: path of cert file
+	:param fname: absolute path of cert file
 	"""
 	with open(fname,'rb') as pem:	
 		cert = crypto.load_certificate(crypto.FILETYPE_PEM, pem.read())
@@ -44,7 +44,7 @@ def loadP12(fname):
 	"""	
 	Load a PKCS12-formatted X.509 certificate from the specified file
 
-	:param fname: path of cert file
+	:param fname: absolute path of cert file
 	"""	
 	with open(fname,'rb') as p12:
 		pw = getpass.getpass("Export password: ")	
