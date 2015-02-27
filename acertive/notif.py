@@ -32,8 +32,12 @@ def logNotify(cert, path, days):
 	"""
 
 	message = 'certificate from file: ' + os.path.abspath(path)
-	message += ' (' + cert.get_issuer().commonName + ') EXPIRES in '
-	message += str(days) + ' days!'
+	message += ' (' + cert.get_issuer().commonName + ')'
+	if days > 0:
+		message += ' EXPIRES in ' + str(days) + ' days!'
+	else:
+		message += ' IS EXPIRED! Please RENEW this certificate if '
+		message += 'it is still in use!'
 	print message	
 	syslog.syslog(message)	
 
@@ -55,8 +59,12 @@ def mailNotify(cert, path, days):
 	message += '[' + str(datetime.datetime.now()) + ']\n'
 	message += 'Certificate from file: ' + os.path.abspath(path) + '\n'
 	message += 'Issued for :' + cert.get_issuer().commonName + '\n\n'
-	message += 'This certificate is set to EXPIRE in ' + str(days) + ' days!\n'
-	message += 'Please consider renewing this certificate soon.\n'
+	if days > 0:
+		message += 'This certificate is set to EXPIRE in '+str(days)+' days!\n'
+		message += 'Please consider renewing this certificate soon.\n'
+	else:
+		message += 'This certificate has EXPIRED!\n'
+		message += 'Please renew the certificate if it is still in use!\n'
 
 	try:
 		smtpObj = smtplib.SMTP('localhost') 

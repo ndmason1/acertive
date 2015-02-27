@@ -4,6 +4,7 @@ from sys import argv
 from  cert import loadCert
 from date_util import *
 from notif import notify
+from datetime import timedelta
 import json
 import warnings
 
@@ -23,8 +24,12 @@ def trackCert(path, weeklyThreshold=30, dailyThreshold=7):
 		for line in certsFile:
 			if line[0:len(path)] == path:				
 				raise UserWarning()
-		certsFile.write(json.dumps({'path':path, 'weekly': weeklyThreshold, 
-									'daily': dailyThreshold}) + "\n")
+		certsFile.write(json.dumps({
+			'path':path, 
+			'weekly': weeklyThreshold, 
+			'daily': dailyThreshold,
+			'lastChecked': str(datetime.today())
+			}) + "\n")
 
 def untrackCert(path):
 	"""	
@@ -53,9 +58,22 @@ def checkTrackedCerts():
 	certsFile.close()
 	for line in lines:		
 		certInfo = json.loads(line)
-		print "checking cert at " + certInfo["path"]
-		checkCert(certInfo["path"])
 
+		path = certInfo['path']
+		cert = loadCert(path)
+
+		expDate = parseUTCDate(cert.get_notAfter())
+		checkedDate = parseUTCDate(certInfo['lastChecked'])		
+		today = datetime.today()
+		diff = today - checkedDate
+		
+		if expDate >= today or \
+		   today >= expDate - timedelta(days=certInfo['daily']) or \
+		   (today >= expDate - timedelta(days=certInfo['weekly']) and \
+		   today - checkedDate >= 7):
+
+			print "checking cert at " + certInfo["path"]
+			checkCert(certInfo['path'])
 
 def checkCert(path):
 	"""	
@@ -76,7 +94,8 @@ if __name__=='__main__':
 	if (len(argv) > 1):		
 		try:
 			
-			trackCert(argv[1])
+			# trackCert(argv[1])
+			checkTrackedCerts()
 			#untrackCert(argv[1])
 			#checkCert(argv[1])
 			
