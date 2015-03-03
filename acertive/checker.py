@@ -7,7 +7,7 @@ from notif import notify
 from datetime import timedelta
 import json
 import warnings
-
+import argparse
 
 
 def trackCert(path, weeklyThreshold=30, dailyThreshold=7):
@@ -22,10 +22,12 @@ def trackCert(path, weeklyThreshold=30, dailyThreshold=7):
 	with open(conf.storedCertsPath(), 'a+') as certsFile:		
 		path = os.path.abspath(path)
 		for line in certsFile:
-			if line[0:len(path)] == path:				
+			certInfo = json.loads(line)
+			if certInfo['path'] == path:
 				raise UserWarning()
+				return
 		certsFile.write(json.dumps({
-			'path':path, 
+			'path': path, 
 			'weekly': weeklyThreshold, 
 			'daily': dailyThreshold,
 			'lastChecked': str(datetime.today())
@@ -42,12 +44,17 @@ def untrackCert(path):
 	lines = certsFile.readlines()	
 	certsFile.close()
 
+	removed = False
 	certsFile = open(conf.storedCertsPath(), 'w')
 	path = os.path.abspath(path)
 	for line in lines:
-		if json.loads(line)["path"] != path:				
+		if json.loads(line)["path"] != path:
 			certsFile.write(line)
+		else:
+			removed = True	
 	certsFile.close()
+	if not removed:
+		raise UserWarning()
 
 def checkTrackedCerts():
 	"""	
@@ -90,17 +97,36 @@ def checkCert(path):
 	
 
 if __name__=='__main__':
+
+	parser = argparse.ArgumentParser()
+	parser.add_argument('-t', '--track', help='track a certificate')
+	parser.add_argument('-u', '--untrack', help='stop tracking a certificate')	
+
+	args = parser.parse_args()
 	
-	if (len(argv) > 1):		
+	if args.track:
 		try:
-			
-			# trackCert(argv[1])
-			checkTrackedCerts()
-			#untrackCert(argv[1])
-			#checkCert(argv[1])
-			
+			trackCert(args.track)
 		except UserWarning:
-			print 'already tracking: ' + argv[1]
-		
+			print 'already tracking: ' + os.path.abspath(args.track)
+	elif args.untrack:		
+		try:
+			untrackCert(args.untrack)
+		except UserWarning:
+			print 'cert not found: ' + os.path.abspath(args.untrack)
 	else:
 		checkTrackedCerts()
+
+	# if (len(argv) > 1):		
+	# 	try:
+			
+	# 		trackCert(argv[1])
+	# 		#checkTrackedCerts()
+	# 		# untrackCert(argv[1])
+	# 		#checkCert(argv[1])
+			
+	# 	except UserWarning:
+	# 		print 'already tracking: ' + os.path.abspath(argv[1])
+		
+	# else:
+	# 	checkTrackedCerts()
