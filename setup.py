@@ -21,4 +21,9 @@ setup(
         "Development Status :: 3 - Alpha",
         "Topic :: Utilities"
     ],
+    entry_points={
+        'console_scripts': [
+            'acertive = acertive.__main__:main'
+        ],
+    }
 )
