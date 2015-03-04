@@ -35,12 +35,14 @@ def logNotify(cert, path, days):
 	m1 += ' (' + cert.get_issuer().commonName + ')'
 	if days > 0:
 		m1 += ' EXPIRES in ' + str(days) + ' days!'
+		m2 = 'Please consider RENEWING this certificate soon!'
 	else:
 		m1 += ' IS EXPIRED!'
 		m2 = 'Please RENEW this certificate if it is still in use!'
 	
-	syslog.syslog(m1)	
-	if m2: syslog.syslog(m2)
+	syslog.syslog(m1)
+	syslog.syslog(m2)
+
 
 def mailNotify(cert, path, days):
 	"""	
