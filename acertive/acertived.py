@@ -8,16 +8,16 @@ import time
 import checker
 
 def createPIDFile():
+	global pidFile
 	"""	
 	Create a PID file to indicate the daemon is running
 	"""
 	pid = str(os.getpid())
 	
 	if os.path.isfile(pidFile):
-		syslog.syslog('PID file exists, exiting')
 		sys.exit()
-	# else:
-	# 	file(pidFile, 'w').write(pid+'\n')
+	else:
+		file(pidFile, 'w').write(pid+'\n')
 
 def deletePIDFile():
 	"""	
