@@ -31,15 +31,16 @@ def logNotify(cert, path, days):
 	:param days: duration in days until expiration
 	"""
 
-	message = 'certificate from file: ' + os.path.abspath(path)
-	message += ' (' + cert.get_issuer().commonName + ')'
+	m1 = 'certificate from file: ' + os.path.abspath(path)
+	m1 += ' (' + cert.get_issuer().commonName + ')'
 	if days > 0:
-		message += ' EXPIRES in ' + str(days) + ' days!'
+		m1 += ' EXPIRES in ' + str(days) + ' days!'
 	else:
-		message += ' IS EXPIRED! Please RENEW this certificate if '
-		message += 'it is still in use!'
-	print message	
-	syslog.syslog(message)	
+		m1 += ' IS EXPIRED!'
+		m2 = 'Please RENEW this certificate if it is still in use!'
+	
+	syslog.syslog(m1)	
+	if m2: syslog.syslog(m2)
 
 def mailNotify(cert, path, days):
 	"""	
