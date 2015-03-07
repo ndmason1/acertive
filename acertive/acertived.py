@@ -43,6 +43,7 @@ def tearDown(signum, frame):
 	:param signum: signal number to catch
 	:param frame: current stack frame	
 	"""
+	syslog('cleaning up for termination')
 	deletePIDFile()
 
 def run():
@@ -51,26 +52,24 @@ def run():
 	certificates
 
 	"""
-	setUp()
+	global pidFile
+	pidFile = '/var/run/acertived.pid'
 
-	print "running as daemon, PID = " + str(os.getpid())
+	setUp()
 	checker.checkTrackedCerts()
 	context = daemon.DaemonContext(
 		pidfile=lockfile.FileLock(pidFile)
 		)
-	# context.signal_map = {
-	# 	signal.SIGTERM: tearDown,
-	# 	signal.SIGHUP: 'terminate'
-	# }
+	context.signal_map = {
+		signal.SIGTERM: tearDown
+	}
 	with context:
 		while(True):
-			syslog.syslog('checking certs')
+			start = time.clock()
+			syslog.syslog('running as daemon, PID = '+str(os.getpid()))
 			checker.checkTrackedCerts()
-			time.sleep(24*60*60)
+			end = time.clock()
+			time.sleep((24*60*60) - int(end-start))
 
 if __name__=='__main__':
-	
-	global pidFile
-	pidFile = '/var/run/acertived.pid'
-
 	run()

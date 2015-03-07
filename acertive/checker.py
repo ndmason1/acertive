@@ -90,7 +90,5 @@ def checkCert(path):
 	:param path: location of certificate
 	"""
 	cert = loadCert(path)
-	days = 400 # TODO extract from certs file
-	expireDate = parseUTCDate(cert.get_notAfter())
-	if expiresInDays(expireDate,days): 		
-		notify(cert,path,daysUntilExpiration(expireDate))
+	expireDate = parseUTCDate(cert.get_notAfter())	
+	notify(cert,path,daysUntilExpiration(expireDate))
