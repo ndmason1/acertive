@@ -3,6 +3,7 @@ from ConfigParser import SafeConfigParser
 
 #TODO add SMTP server as config item
 
+
 def useTLSWithMail():
 	"""	
 	Retrieve config setting for attempting to use TLS with SMTP notifications
