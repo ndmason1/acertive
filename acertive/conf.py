@@ -13,7 +13,7 @@ def notifRecips():
 	"""	
 	Retrieve list of email addresses to send notifications to
 	"""
-	return [conf.get('MAIL', 'notifyAddrs')]
+	return conf.get('MAIL', 'notifyAddrs').split(',')
 
 def notifMethod():
 	"""	

@@ -18,7 +18,7 @@ def notify(cert, path, days):
 	"""
 	if conf.notifMethod() == 'log':
 		logNotify(cert, path, days)
-	elif conf.notifMethod == 'mail':
+	elif conf.notifMethod() == 'mail':
 		mailNotify(cert, path, days)
 
 
@@ -32,7 +32,7 @@ def logNotify(cert, path, days):
 	"""
 
 	m1 = 'certificate from file: ' + os.path.abspath(path)
-	m1 += ' (' + cert.get_issuer().commonName + ')'
+	m1 += ' (' + cert.get_subject().commonName + ')'
 	if days > 0:
 		m1 += ' EXPIRES in ' + str(days) + ' days!'
 		m2 = 'Please consider RENEWING this certificate soon!'
@@ -54,14 +54,19 @@ def mailNotify(cert, path, days):
 	"""
 
 	sender = 'acertive@acertive.d'	
-	receivers = conf.getNotifRecips()
+	receivers = conf.notifRecips()
+	rStr = ''
+	for addr in receivers:
+		rStr += '<' + addr + '>,'
+	rStr = rStr[:-1]
 	
 	message = 'From: acertive-daemon <' + sender + '>\n'
-	message += 'To: <' + receivers[0] + '>\n' #TODO expand list
+	message += 'To: ' + rStr + '\n'
 	message += 'Subject: WARNING: Impending certificate expiration!\n\n'
 	message += '[' + str(datetime.datetime.now()) + ']\n'
 	message += 'Certificate from file: ' + os.path.abspath(path) + '\n'
-	message += 'Issued for :' + cert.get_issuer().commonName + '\n\n'
+	message += 'Issued for: ' + cert.get_subject().commonName + '\n'
+	message += 'Issued by: ' + cert.get_issuer().commonName + '\n\n'
 	if days > 0:
 		message += 'This certificate is set to EXPIRE in '+str(days)+' days!\n'
 		message += 'Please consider renewing this certificate soon.\n'
