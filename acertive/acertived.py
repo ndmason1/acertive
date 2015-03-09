@@ -64,9 +64,9 @@ def run():
 		signal.SIGTERM: tearDown
 	}
 	with context:
+		syslog.syslog('running as daemon, PID = '+str(os.getpid()))
 		while(True):
-			start = time.clock()
-			syslog.syslog('running as daemon, PID = '+str(os.getpid()))
+			start = time.clock()			
 			checker.checkTrackedCerts()
 			end = time.clock()
 			time.sleep((24*60*60) - int(end-start))
