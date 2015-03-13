@@ -9,7 +9,7 @@ import acertived
 def main():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-s', '--startd', help='start daemon', action='store_true')
-	parser.add_argument('-x', '--stopd', help='stop (eXit) daemon', action='store_true')
+	parser.add_argument('-k', '--stopd', help='stop daemon', action='store_true')
 	parser.add_argument('-t', '--track', help='track a certificate')
 	parser.add_argument('-u', '--untrack', help='stop tracking a certificate')	
 
@@ -28,7 +28,7 @@ def main():
 	elif args.startd:		
 		acertived.run()
 	elif args.stopd:		
-		pass # TODO record PID so daemon can be killed
+		acertived.stop()
 	else:
 		checkTrackedCerts()
 
