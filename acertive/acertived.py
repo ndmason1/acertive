@@ -6,6 +6,7 @@ import sys
 import syslog
 import time
 import checker
+import atexit
 
 def createPIDFile():
 	global pidFile
@@ -38,13 +39,13 @@ def tearDown(signum, frame):
 	Conforms with the signal handler interface specified at 
 	https://docs.python.org/2/library/signal.html
 
-	TODO: fix this
-
 	:param signum: signal number to catch
 	:param frame: current stack frame	
 	"""
-	syslog('cleaning up for termination')
+	syslog.syslog('cleaning up for termination')
 	deletePIDFile()
+	exception = SystemExit('caught SIGTERM, exiting')
+	raise exception
 
 def run():
 	"""	
@@ -59,12 +60,12 @@ def run():
 	checker.checkTrackedCerts()
 	context = daemon.DaemonContext(
 		pidfile=lockfile.FileLock(pidFile)
-		)
+	)
 	context.signal_map = {
 		signal.SIGTERM: tearDown
 	}
 	with context:
-		syslog.syslog('running as daemon, PID = '+str(os.getpid()))
+		syslog.syslog('running as daemon, PID = '+str(os.getpid()))		
 		while(True):
 			start = time.clock()			
 			checker.checkTrackedCerts()
