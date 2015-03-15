@@ -1,21 +1,21 @@
 from OpenSSL import crypto
 import getpass
 
-def loadCert(fname):	
+def load_cert(fname):	
 	"""	
 	Load an X.509 certificate from the specified file
 
 	:param fname: absolute path of cert file
 	"""
 	if (fname[-3:] in ['p12', 'pfx']):
-		cert = loadP12(fname)		
+		cert = load_p12(fname)		
 	elif (fname[-3:] in ['pem', 'crt']):
-		cert = loadPem(fname)			
+		cert = load_pem(fname)			
 	elif (fname[-3:] in ['der', 'cer']):
-		cert = loadDer(fname)
+		cert = load_der(fname)
 	return cert
 
-def loadDer(fname):
+def load_der(fname):
 	"""	
 	Load a DER-formatted X.509 certificate from the specified file
 
@@ -25,7 +25,7 @@ def loadDer(fname):
 		cert = crypto.load_certificate(crypto.FILETYPE_ASN1, der.read())
 		return cert
 
-def loadPem(fname):
+def load_pem(fname):
 	"""	
 	Load a PEM-formatted X.509 certificate from the specified file
 
@@ -35,7 +35,7 @@ def loadPem(fname):
 		cert = crypto.load_certificate(crypto.FILETYPE_PEM, pem.read())
 		return cert
 
-def loadP12(fname):
+def load_p12(fname):
 	"""	
 	Load a PKCS12-formatted X.509 certificate from the specified file
 

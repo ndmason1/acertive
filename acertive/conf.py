@@ -1,14 +1,14 @@
 import os
 from ConfigParser import SafeConfigParser
 
-def notifMethod():
+def notif_method():
 	"""	
 	Retrieve notification method to use	
 	Supported options: "log" (syslog entries), "mail" (email messages)
 	"""
 	return conf.get('MAIN', 'notifyMethod')
 
-def storedCertsPath():
+def stored_certs_path():
 	"""	
 	Retrieve path of file containing tracked certificates and notification 
 	settings
@@ -27,19 +27,19 @@ def daily():
 	"""
 	return int(conf.get('MAIN', 'dailyThreshold'))
 
-def SMTPServer():
+def SMTP_server():
 	"""	
 	Retrieve config setting for SMTP server to use for mail notifications
 	"""
 	return conf.get('MAIL', 'SMTPServerName')
 
-def notifRecips():
+def notif_recips():
 	"""	
 	Retrieve list of email addresses to send notifications to
 	"""
 	return conf.get('MAIL', 'notifyAddrs').split(',')
 
-def useTLSWithMail():
+def use_TLS_with_mail():
 	"""	
 	Retrieve config setting for attempting to use TLS with SMTP notifications
 	"""

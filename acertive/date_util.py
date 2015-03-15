@@ -1,38 +1,38 @@
 import dateutil.parser
 from datetime import datetime
 
-def parseUTCDate(utcStr):
+def parse_UTC_date(utc_str):
 	"""	
 	Extract a datetime object from a UTC timestamp
 
-	:param utcStr: UTC timestamp
+	:param utc_str: UTC timestamp
 	"""
-	return dateutil.parser.parse(utcStr,ignoretz=True)
+	return dateutil.parser.parse(utc_str,ignoretz=True)
 
-def daysUntilExpiration(dateTime):
+def days_until_expiration(date_time):
 	"""	
 	Returns number of days until the given dateTime
 
-	:param dateTime: datetime object representing an expiry date
+	:param date_time: datetime object representing an expiry date
 	"""	
-	diff = dateTime - datetime.today()
+	diff = date_time - datetime.today()
 	return diff.days
 
 	
-def expiresInDays(dateTime, numDays):
+def expires_in_days(date_time, num_days):
 	"""	
 	Return true if given datetime occurs within a specified number of days from 
 	today
 
-	:param dateTime: datetime object representing an expiry date
-	:param numDays: duration in days from now after which the cert corresponding
+	:param date_time: datetime object representing an expiry date
+	:param num_days: duration in days from now after which the cert corresponding
 		to the given datetime is considered expired
 	"""	
-	diff = dateTime - datetime.today()
-	return diff.days <= numDays
+	diff = date_time - datetime.today()
+	return diff.days <= num_days
 	
 
 if __name__=='__main__':
-	d1 = parseUTCDate('20150218230726Z')	
-	print 'days until exp: ' + str(daysUntilExpiration(d1))
+	d1 = parse_UTC_date('20150218230726Z')	
+	print 'days until exp: ' + str(days_until_expiration(d1))
 	

@@ -7,25 +7,25 @@ import syslog
 import time
 import checker
 
-pidFile = '/var/run/acertived.pid'
+pid_file = '/var/run/acertived.pid'
 
-def writePIDFile():
+def write_PID_file():
 	"""	
 	Create a PID file to indicate the daemon is running
 	"""
 	pid = str(os.getpid())
 	
-	if os.path.isfile(pidFile):		
+	if os.path.isfile(pid_file):		
 		sys.exit()
 	else:
-		file(pidFile, 'w').write(pid+'\n')
+		file(pid_file, 'w').write(pid+'\n')
 
-def cleanUp():
+def clean_up():
 	"""	
 	Remove the PID file to indicate the daemon is not running
 	"""
 	syslog.syslog('cleaning up for termination')
-	os.unlink(pidFile)
+	os.unlink(pid_file)
 
 def terminate(signum=None, frame=None):
 	"""	
@@ -37,7 +37,7 @@ def terminate(signum=None, frame=None):
 	:param signum: signal number to catch
 	:param frame: current stack frame	
 	"""
-	cleanUp()
+	clean_up()
 	sys.exit()
 
 def run():
@@ -47,7 +47,7 @@ def run():
 	"""	
 
 	context = daemon.DaemonContext(
-		pidfile=lockfile.FileLock(pidFile)
+		pidfile=lockfile.FileLock(pid_file)
 	)
 	context.signal_map = {
 		signal.SIGTERM: terminate
@@ -55,17 +55,16 @@ def run():
 
 	with context:
 		syslog.syslog('running as daemon, PID = '+str(os.getpid()))		
-		writePIDFile()
+		write_PID_file()
 		while(True):
 			start = time.clock()			
-			checker.checkTrackedCerts()
+			checker.check_tracked_certs()
 			end = time.clock()
 			time.sleep((24*60*60) - int(end-start))
 
 def stop():
 	"""	
 	Stop the daemon process
-	"""
-	pidFile = '/var/run/acertived.pid'
-	pid = open(pidFile, 'r').read()
+	"""	
+	pid = open(pid_file, 'r').read()
 	os.kill(int(pid), signal.SIGTERM)

@@ -16,14 +16,14 @@ def notify(cert, path, days):
 	:param path: absolute path of certificate
 	:param days: duration in days until expiration
 	"""
-	method = conf.notifMethod()
+	method = conf.notif_method()
 	if method == 'log' or method == 'both':
-		logNotify(cert, path, days)
+		log_notify(cert, path, days)
 	if method == 'mail' or method == 'both':
-		mailNotify(cert, path, days)
+		mail_notify(cert, path, days)
 
 
-def logNotify(cert, path, days):
+def log_notify(cert, path, days):
 	"""	
 	Send a notification to syslog
 
@@ -45,7 +45,7 @@ def logNotify(cert, path, days):
 	syslog.syslog(m2)
 
 
-def mailNotify(cert, path, days):
+def mail_notify(cert, path, days):
 	"""	
 	Send a notification to one or more recipients via SMTP
 
@@ -55,14 +55,14 @@ def mailNotify(cert, path, days):
 	"""
 
 	sender = 'acertive@acertive.d'	
-	receivers = conf.notifRecips()
-	rStr = ''
+	receivers = conf.notif_recips()
+	r_str = ''
 	for addr in receivers:
-		rStr += '<' + addr + '>,'
-	rStr = rStr[:-1]
+		r_str += '<' + addr + '>,'
+	r_str = r_str[:-1]
 	
 	message = 'From: acertive-daemon <' + sender + '>\n'
-	message += 'To: ' + rStr + '\n'
+	message += 'To: ' + r_str + '\n'
 	message += 'Subject: WARNING: Impending certificate expiration!\n\n'
 	message += '[' + str(datetime.datetime.now()) + ']\n'
 	message += 'Certificate from file: ' + os.path.abspath(path) + '\n'
@@ -76,9 +76,8 @@ def mailNotify(cert, path, days):
 		message += 'Please renew the certificate if it is still in use!\n'
 
 	try:
-		smtpObj = smtplib.SMTP(conf.SMTPServer()) 
-		# smtpObj = smtplib.SMTP('localhost') 
-		if conf.useTLSWithMail():
+		smtpObj = smtplib.SMTP(conf.SMTP_server()) 
+		if conf.use_TLS_with_mail():
 			smtpObj.starttls()
 		smtpObj.sendmail(sender, receivers, message)
 		smtpObj.close()

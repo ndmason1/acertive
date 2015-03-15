@@ -1,6 +1,6 @@
 import conf
 import os
-from  cert import loadCert
+from  cert import load_cert
 from date_util import *
 from notif import notify
 from datetime import timedelta
@@ -8,82 +8,82 @@ import json
 import warnings
 
 
-def trackCert(path):
+def track_cert(path):
 	"""	
 	Add this certificate to the tracked certs file.
 
 	:param path: location of certificate
 	"""
-	with open(conf.storedCertsPath(), 'a+') as certsFile:
+	with open(conf.stored_certs_path(), 'a+') as certs_file:
 		path = os.path.abspath(path)
 		if os.path.isfile(path):
-			for line in certsFile:
-				certInfo = json.loads(line)
-				if certInfo['path'] == path:
+			for line in certs_file:
+				cert_info = json.loads(line)
+				if cert_info['path'] == path:
 					raise UserWarning()
 					return
-			certsFile.write(json.dumps({
+			certs_file.write(json.dumps({
 				'path': path, 
 				'weekly': conf.weekly(), 
 				'daily': conf.daily(),
 				'lastChecked': str(datetime.today())
 				}) + "\n")
 
-def untrackCert(path):
+def untrack_cert(path):
 	"""	
 	Remove this certificate from the tracked certs file.
 
 	:param path: location of certificate
 	"""
 
-	certsFile = open(conf.storedCertsPath(), 'r')
-	lines = certsFile.readlines()	
-	certsFile.close()
+	certs_file = open(conf.stored_certs_path(), 'r')
+	lines = certs_file.readlines()	
+	certs_file.close()
 
 	removed = False
-	certsFile = open(conf.storedCertsPath(), 'w')
+	certs_file = open(conf.stored_certs_path(), 'w')
 	path = os.path.abspath(path)
 	for line in lines:
 		if json.loads(line)["path"] != path:
-			certsFile.write(line)
+			certs_file.write(line)
 		else:
 			removed = True	
-	certsFile.close()
+	certs_file.close()
 	if not removed:
 		raise UserWarning()
 
-def checkTrackedCerts():
+def check_tracked_certs():
 	"""	
 	Check each tracked certificate for expiration.
 	"""
-	certsFile = open(conf.storedCertsPath(), 'r')
-	lines = certsFile.readlines()	
-	certsFile.close()
+	certs_file = open(conf.stored_certs_path(), 'r')
+	lines = certs_file.readlines()	
+	certs_file.close()
 	for line in lines:		
-		certInfo = json.loads(line)
+		cert_info = json.loads(line)
 
-		path = certInfo['path']
-		cert = loadCert(path)
+		path = cert_info['path']
+		cert = load_cert(path)
 
-		expDate = parseUTCDate(cert.get_notAfter())
-		checkedDate = parseUTCDate(certInfo['lastChecked'])		
+		exp_date = parse_UTC_date(cert.get_notAfter())
+		checked_date = parse_UTC_date(cert_info['lastChecked'])		
 		today = datetime.today()
-		diff = today - checkedDate
+		diff = today - checked_date
 		
-		if expDate >= today or \
-		   today >= expDate - timedelta(days=certInfo['daily']) or \
-		   (today >= expDate - timedelta(days=certInfo['weekly']) and \
-		   today - checkedDate >= 7):
+		if exp_date >= today or \
+		   today >= exp_date - timedelta(days=cert_info['daily']) or \
+		   (today >= exp_date - timedelta(days=cert_info['weekly']) and \
+		   today - checked_date >= 7):
 			
-			checkCert(certInfo['path'])
+			check_cert(cert_info['path'])
 
-def checkCert(path):
+def check_cert(path):
 	"""	
 	Check a certificate for expiration. If the cert is within a notification
 	threshold, send a notification.
 
 	:param path: location of certificate
 	"""
-	cert = loadCert(path)
-	expireDate = parseUTCDate(cert.get_notAfter())	
-	notify(cert,path,daysUntilExpiration(expireDate))
+	cert = load_cert(path)
+	exp_date = parse_UTC_date(cert.get_notAfter())	
+	notify(cert,path,days_until_expiration(exp_date))

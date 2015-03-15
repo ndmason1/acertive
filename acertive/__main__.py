@@ -1,8 +1,8 @@
 import argparse
 from checker import (
-	trackCert,
-	untrackCert,
-	checkTrackedCerts,
+	track_cert,
+	untrack_cert,
+	check_tracked_certs,
 )
 import acertived
 
@@ -17,12 +17,12 @@ def main():
 	
 	if args.track:
 		try:
-			trackCert(args.track)
+			track_cert(args.track)
 		except UserWarning:
 			print 'already tracking: ' + os.path.abspath(args.track)
 	elif args.untrack:		
 		try:
-			untrackCert(args.untrack)
+			untrack_cert(args.untrack)
 		except UserWarning:
 			print 'cert not found: ' + os.path.abspath(args.untrack)
 	elif args.startd:		
@@ -30,7 +30,7 @@ def main():
 	elif args.stopd:		
 		acertived.stop()
 	else:
-		checkTrackedCerts()
+		check_tracked_certs()
 
 if __name__ == '__main__':
 	main()
