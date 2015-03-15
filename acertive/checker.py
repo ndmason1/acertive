@@ -1,37 +1,33 @@
 import conf
 import os
-from sys import argv
 from  cert import loadCert
 from date_util import *
 from notif import notify
 from datetime import timedelta
 import json
 import warnings
-import argparse
 
 
-def trackCert(path, weeklyThreshold=30, dailyThreshold=7):
+def trackCert(path):
 	"""	
 	Add this certificate to the tracked certs file.
 
 	:param path: location of certificate
-	:param weeklyThreshold: number of days from expiration to notify weekly
-	:param dailyThreshold: number of days from expiration to notify daily
 	"""
-
-	with open(conf.storedCertsPath(), 'a+') as certsFile:		
+	with open(conf.storedCertsPath(), 'a+') as certsFile:
 		path = os.path.abspath(path)
-		for line in certsFile:
-			certInfo = json.loads(line)
-			if certInfo['path'] == path:
-				raise UserWarning()
-				return
-		certsFile.write(json.dumps({
-			'path': path, 
-			'weekly': weeklyThreshold, 
-			'daily': dailyThreshold,
-			'lastChecked': str(datetime.today())
-			}) + "\n")
+		if os.path.isfile(path):
+			for line in certsFile:
+				certInfo = json.loads(line)
+				if certInfo['path'] == path:
+					raise UserWarning()
+					return
+			certsFile.write(json.dumps({
+				'path': path, 
+				'weekly': conf.weekly(), 
+				'daily': conf.daily(),
+				'lastChecked': str(datetime.today())
+				}) + "\n")
 
 def untrackCert(path):
 	"""	
@@ -78,8 +74,7 @@ def checkTrackedCerts():
 		   today >= expDate - timedelta(days=certInfo['daily']) or \
 		   (today >= expDate - timedelta(days=certInfo['weekly']) and \
 		   today - checkedDate >= 7):
-
-			print "checking cert at " + certInfo["path"]
+			
 			checkCert(certInfo['path'])
 
 def checkCert(path):

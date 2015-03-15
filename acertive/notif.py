@@ -16,9 +16,10 @@ def notify(cert, path, days):
 	:param path: absolute path of certificate
 	:param days: duration in days until expiration
 	"""
-	if conf.notifMethod() == 'log':
+	method = conf.notifMethod()
+	if method == 'log' or method == 'both':
 		logNotify(cert, path, days)
-	elif conf.notifMethod() == 'mail':
+	if method == 'mail' or method == 'both':
 		mailNotify(cert, path, days)
 
 
@@ -75,10 +76,11 @@ def mailNotify(cert, path, days):
 		message += 'Please renew the certificate if it is still in use!\n'
 
 	try:
-		smtpObj = smtplib.SMTP('localhost') 
+		smtpObj = smtplib.SMTP(conf.SMTPServer()) 
+		# smtpObj = smtplib.SMTP('localhost') 
 		if conf.useTLSWithMail():
 			smtpObj.starttls()
 		smtpObj.sendmail(sender, receivers, message)
 		smtpObj.close()
 	except smtplib.SMTPException:
-		print traceback.format_exc()
+		print 'exception ' + traceback.format_exc()
