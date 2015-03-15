@@ -13,6 +13,8 @@ def load_cert(fname):
 		cert = load_pem(fname)			
 	elif (fname[-3:] in ['der', 'cer']):
 		cert = load_der(fname)
+	else:
+		raise NotImplementedError('file format not accepted')
 	return cert
 
 def load_der(fname):

@@ -11,12 +11,32 @@ import warnings
 def track_cert(path):
 	"""	
 	Add this certificate to the tracked certs file.
+	If passed a directory, all certificate files in the directory tree will be 
+	tracked.
 
-	:param path: location of certificate
+	:param path: location of certificate or directry containing certificates
 	"""
 	with open(conf.stored_certs_path(), 'a+') as certs_file:
 		path = os.path.abspath(path)
-		if os.path.isfile(path):
+
+		fmts = ['.cer', '.der', '.crt', '.pem']	
+
+		if os.path.isdir(path):
+			for root, dirs, files in os.walk(path):
+			    for file in files:
+			    	for fmt in fmts:
+				        if file.endswith(fmt):
+				        	certs_file.write(json.dumps({
+								'path': os.path.abspath(file), 
+								'weekly': conf.weekly(), 
+								'daily': conf.daily(),
+								'lastChecked': str(datetime.today())
+							}) + "\n")
+
+		elif os.path.isfile(path):
+			if path[-4:] not in fmts:
+				print "file format not accepted: must be one of " + str(fmts)
+
 			for line in certs_file:
 				cert_info = json.loads(line)
 				if cert_info['path'] == path:
@@ -28,6 +48,8 @@ def track_cert(path):
 				'daily': conf.daily(),
 				'lastChecked': str(datetime.today())
 				}) + "\n")
+		else:
+			print "no such file: " + path
 
 def untrack_cert(path):
 	"""	
@@ -51,6 +73,17 @@ def untrack_cert(path):
 	certs_file.close()
 	if not removed:
 		raise UserWarning()
+
+def clear_certs():
+	"""	
+	Remove all certificates from the tracked certs file.
+
+	:param path: location of certificate
+	"""
+	certs_file = open(conf.stored_certs_path(), 'rw+')
+	certs_file.truncate()
+	certs_file.close()
+
 
 def check_tracked_certs():
 	"""	
