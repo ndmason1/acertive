@@ -35,7 +35,7 @@ def main():
 	elif args.stopd:		
 		acertived.stop()
 	else:
-		check_tracked_certs()
+		check_tracked_certs(update=False) # do not update lastChecked
 
 if __name__ == '__main__':
 	main()

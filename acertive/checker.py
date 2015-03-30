@@ -23,15 +23,15 @@ def track_cert(path):
 
 		if os.path.isdir(path):
 			for root, dirs, files in os.walk(path):
-			    for file in files:
+			    for fname in files:
 			    	for fmt in fmts:
-				        if file.endswith(fmt):
+				        if fname.endswith(fmt):
 				        	certs_file.write(json.dumps({
-								'path': os.path.abspath(file), 
+								'path': os.path.join(root, fname), 
 								'weekly': conf.weekly(), 
 								'daily': conf.daily(),
 								'lastChecked': str(datetime.today())
-							}) + "\n")
+								}) + "\n")
 
 		elif os.path.isfile(path):
 			if path[-4:] not in fmts:
@@ -85,7 +85,7 @@ def clear_certs():
 	certs_file.close()
 
 
-def check_tracked_certs():
+def check_tracked_certs(update=True):
 	"""	
 	Check each tracked certificate for expiration.
 	"""
@@ -97,6 +97,7 @@ def check_tracked_certs():
 
 		path = cert_info['path']
 		cert = load_cert(path)
+		checked_certs = set([])
 
 		exp_date = parse_UTC_date(cert.get_notAfter())
 		checked_date = parse_UTC_date(cert_info['lastChecked'])		
@@ -108,7 +109,17 @@ def check_tracked_certs():
 		   (today >= exp_date - timedelta(days=cert_info['weekly']) and \
 		   today - checked_date >= 7):
 			
+			checked_certs.add(cert_info['path'])
 			check_cert(cert_info['path'])
+
+	# update lastChecked for each cert that was checked	
+	certs_file = open(conf.stored_certs_path(), 'w')	
+	for line in lines:
+		cert_info = json.loads(line)
+		if cert_info['path'] in checked_certs:	
+			cert_info['lastChecked'] = str(datetime.today())		
+		certs_file.write(json.dumps(cert_info)+'\n')
+	certs_file.close()
 
 def check_cert(path):
 	"""	
