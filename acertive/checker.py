@@ -111,15 +111,15 @@ def check_tracked_certs(update=True):
 			
 			checked_certs.add(cert_info['path'])
 			check_cert(cert_info['path'])
-
-	# update lastChecked for each cert that was checked	
-	certs_file = open(conf.stored_certs_path(), 'w')	
-	for line in lines:
-		cert_info = json.loads(line)
-		if cert_info['path'] in checked_certs:	
-			cert_info['lastChecked'] = str(datetime.today())		
-		certs_file.write(json.dumps(cert_info)+'\n')
-	certs_file.close()
+	if update:
+		# update lastChecked for each cert that was checked	
+		certs_file = open(conf.stored_certs_path(), 'w')	
+		for line in lines:
+			cert_info = json.loads(line)
+			if cert_info['path'] in checked_certs:	
+				cert_info['lastChecked'] = str(datetime.today())		
+			certs_file.write(json.dumps(cert_info)+'\n')
+		certs_file.close()
 
 def check_cert(path):
 	"""	
