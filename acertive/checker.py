@@ -110,7 +110,7 @@ def check_tracked_certs(update=True):
 		   today - checked_date >= 7):
 			
 			checked_certs.add(cert_info['path'])
-			check_cert(cert_info['path'])
+			check_cert(cert_info)
 	if update:
 		# update lastChecked for each cert that was checked	
 		certs_file = open(conf.stored_certs_path(), 'w')	
@@ -121,13 +121,15 @@ def check_tracked_certs(update=True):
 			certs_file.write(json.dumps(cert_info)+'\n')
 		certs_file.close()
 
-def check_cert(path):
+def check_cert(cert_info):
 	"""	
 	Check a certificate for expiration. If the cert is within a notification
 	threshold, send a notification.
-
-	:param path: location of certificate
+	
+	:param cert_info: dict containing tracked cert information
 	"""
-	cert = load_cert(path)
-	exp_date = parse_UTC_date(cert.get_notAfter())	
-	notify(cert,path,days_until_expiration(exp_date))
+	cert = load_cert(cert_info['path'])
+	exp_date = parse_UTC_date(cert.get_notAfter())
+	days = days_until_expiration(exp_date)
+	if days < cert_info['weekly']:
+		notify(cert, cert_info['path'], days)
