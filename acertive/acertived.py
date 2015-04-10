@@ -7,7 +7,7 @@ import syslog
 import time
 import checker
 
-pid_file = '/var/run/acertived.pid'
+pid_file = '/var/run/acertive/acertived.pid'
 
 def write_PID_file():
 	"""	
@@ -24,7 +24,7 @@ def clean_up():
 	"""	
 	Remove the PID file to indicate the daemon is not running
 	"""
-	syslog.syslog('cleaning up for termination')
+	syslog.syslog('terminating...')
 	os.unlink(pid_file)
 
 def terminate(signum=None, frame=None):
@@ -45,14 +45,14 @@ def run():
 	Start the daemon process, which wakes once per day to check all the tracked 
 	certificates
 	"""	
-
+	syslog.syslog('starting daemon...')
 	context = daemon.DaemonContext(
 		pidfile=lockfile.FileLock(pid_file)
 	)
 	context.signal_map = {
 		signal.SIGTERM: terminate
 	}
-
+	
 	with context:
 		syslog.syslog('running as daemon, PID = '+str(os.getpid()))		
 		write_PID_file()

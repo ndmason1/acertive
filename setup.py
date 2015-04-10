@@ -10,6 +10,12 @@ class InstallTasks(install):
         uid = int(os.getenv('SUDO_UID', '0'))
         gid = int(os.getenv('SUDO_GID', '0'))
 
+        # create directory for daemon PID file
+        pid_dir = '/var/run/acertive/'
+        if not os.path.isdir(pid_dir):
+            os.mkdir(pid_dir)
+            os.chown(pid_dir, uid, gid)
+
         # create config file
         conf_file = 'config.cfg'
         data_dir = '/etc/acertive/'
@@ -24,11 +30,14 @@ class InstallTasks(install):
 
         conf.add_section('MAIL')
         conf.set('MAIL','SMTPServerName','localhost')
+        conf.set('MAIL','senderAddr','acertive@acertive.d')
         conf.set('MAIL','notifyAddrs','')
         conf.set('MAIL','useTLS', 0)
 
-        with open(conf_file, 'wb') as cfile:
+
+        with open(os.path.join(data_dir,conf_file), 'wb') as cfile:
             conf.write(cfile)
+        os.chown(os.path.join(data_dir,conf_file), uid, gid)
                 
         # create tracked certs file        
         if not os.path.exists(data_dir):
@@ -43,7 +52,7 @@ def read(fname):
 
 setup(
     name = "acertive",
-    version = "0.5",
+    version = "1.0",
     author = "Nigel Mason",
     author_email = "nigel@nigeldmason.com",
     description = ("An SSL certificate monitor for Linux"),
@@ -52,10 +61,14 @@ setup(
     url = "https://github.com/ndmason1/acertive",
     packages=["acertive"],
     long_description=read("README.md"),
-    install_requires=["pyopenssl", "python-daemon"],
+    install_requires=["pyopenssl"],
     classifiers=[
-        "Development Status :: 3 - Alpha",
-        "Topic :: Utilities"
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: System Administrators",
+        "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
+        "Operating System :: POSIX :: Linux",
+        "Programming Language :: Python :: 2",
+        "Topic :: System :: Networking :: Monitoring"
     ],
     entry_points={
         'console_scripts': [
@@ -64,8 +77,5 @@ setup(
     },
     cmdclass={
         'install': InstallTasks
-    },
-    # data_files=[
-    #     ('/etc/init.d', ['init-script'])
-    # ]
+    }
 )

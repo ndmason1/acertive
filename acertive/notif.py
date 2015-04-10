@@ -33,16 +33,18 @@ def log_notify(cert, path, days):
 	"""
 
 	m1 = 'certificate from file: ' + os.path.abspath(path)
-	m1 += ' (' + cert.get_subject().commonName + ')'
+	m2 = ' (' + cert.get_subject().commonName + ')'
+	m3 = ''
 	if days > 0:
-		m1 += ' EXPIRES in ' + str(days) + ' days!'
-		m2 = 'Please consider RENEWING this certificate soon!'
+		m3 = 'EXPIRES in ' + str(days) + ' days!'
+		m3 += ' Please consider RENEWING this certificate soon!'
 	else:
-		m1 += ' IS EXPIRED!'
-		m2 = 'Please RENEW this certificate if it is still in use!'
+		m3 = 'IS EXPIRED!'
+		m3 += ' Please RENEW this certificate if it is still in use!'		
 	
 	syslog.syslog(m1)
 	syslog.syslog(m2)
+	syslog.syslog(m3)
 
 
 def mail_notify(cert, path, days):
@@ -52,9 +54,9 @@ def mail_notify(cert, path, days):
 	:param cert: X509 object corresponding to certificate
 	:param path: absolute path of certificate
 	:param days: duration in days until expiration
-	"""
+	"""	
 
-	sender = 'acertive@acertive.d'	
+	sender = conf.sender_email()
 	receivers = conf.notif_recips()
 	r_str = ''
 	for addr in receivers:
@@ -69,7 +71,7 @@ def mail_notify(cert, path, days):
 	message += 'Issued for: ' + cert.get_subject().commonName + '\n'
 	message += 'Issued by: ' + cert.get_issuer().commonName + '\n\n'
 	if days > 0:
-		message += 'This certificate is set to EXPIRE in '+str(days)+' days!\n'
+		message += 'This certificate will EXPIRE in '+str(days)+' days!\n'
 		message += 'Please consider renewing this certificate soon.\n'
 	else:
 		message += 'This certificate has EXPIRED!\n'

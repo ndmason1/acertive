@@ -4,7 +4,7 @@ from ConfigParser import SafeConfigParser
 def notif_method():
 	"""	
 	Retrieve notification method to use	
-	Supported options: "log" (syslog entries), "mail" (email messages)
+	Supported options: "log" (syslog entries), "mail" (email messages), "both"
 	"""
 	return conf.get('MAIN', 'notifyMethod')
 
@@ -17,13 +17,13 @@ def stored_certs_path():
 
 def weekly():
 	"""	
-	Retrieve config setting for weekly notification threshold value
+	Retrieve config setting for default weekly notification threshold value
 	"""
 	return int(conf.get('MAIN', 'weeklyThreshold'))
 
 def daily():
 	"""	
-	Retrieve config setting for daily notification threshold value
+	Retrieve config setting for default daily notification threshold value
 	"""
 	return int(conf.get('MAIN', 'dailyThreshold'))
 
@@ -45,7 +45,13 @@ def use_TLS_with_mail():
 	"""
 	return conf.getboolean('MAIL', 'useTLS')
 
+def sender_email():
+	"""	
+	Retrieve config setting for sender email address
+	"""
+	return conf.get('MAIL', 'senderAddr')
+
 
 conf = SafeConfigParser()
 app_dir = os.path.dirname(os.path.realpath(__file__))[0:-8]
-conf.read(app_dir + 'config.cfg')
+conf.read('/etc/acertive/config.cfg')

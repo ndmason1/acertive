@@ -8,7 +8,7 @@ import json
 import warnings
 
 
-def track_cert(path):
+def track_cert(path, daily=conf.daily(), weekly=conf.weekly()):
 	"""	
 	Add this certificate to the tracked certs file.
 	If passed a directory, all certificate files in the directory tree will be 
@@ -28,9 +28,9 @@ def track_cert(path):
 				        if fname.endswith(fmt):
 				        	certs_file.write(json.dumps({
 								'path': os.path.join(root, fname), 
-								'weekly': conf.weekly(), 
-								'daily': conf.daily(),
-								'lastChecked': str(datetime.today())
+								'weekly': str(weekly), 
+								'daily': str(daily),
+								'lastNotified': str(datetime.today())
 								}) + "\n")
 
 		elif os.path.isfile(path):
@@ -44,9 +44,9 @@ def track_cert(path):
 					return
 			certs_file.write(json.dumps({
 				'path': path, 
-				'weekly': conf.weekly(), 
-				'daily': conf.daily(),
-				'lastChecked': str(datetime.today())
+				'weekly': str(weekly), 
+				'daily': str(daily),
+				'lastNotified': str(datetime.today())
 				}) + "\n")
 		else:
 			print "no such file: " + path
@@ -88,6 +88,7 @@ def clear_certs():
 def check_tracked_certs(update=True):
 	"""	
 	Check each tracked certificate for expiration.
+	Initiate a notification if expiraiton falls within a threshold.
 	"""
 	certs_file = open(conf.stored_certs_path(), 'r')
 	lines = certs_file.readlines()	
@@ -97,29 +98,46 @@ def check_tracked_certs(update=True):
 
 		path = cert_info['path']
 		cert = load_cert(path)
-		checked_certs = set([])
+		notified_certs = set([])
 
 		exp_date = parse_UTC_date(cert.get_notAfter())
-		checked_date = parse_UTC_date(cert_info['lastChecked'])		
+		notified_date = parse_UTC_date(cert_info['lastNotified'])		
 		today = datetime.today()
-		diff = today - checked_date
-		
-		if exp_date >= today or \
-		   today >= exp_date - timedelta(days=cert_info['daily']) or \
-		   (today >= exp_date - timedelta(days=cert_info['weekly']) and \
-		   today - checked_date >= 7):
-			
-			checked_certs.add(cert_info['path'])
+		diff = today - notified_date
+		days = days_until_expiration(exp_date)
+
+		if exp_date <= today or days <= int(cert_info['daily']):
+			# already expired or within daily threshold
+			notified_certs.add(cert_info['path'])
 			check_cert(cert_info)
+		elif days <= int(cert_info['weekly']) and (diff.days >= 7 or not update):
+			# within weekly threshold: notify only if a week has passed since
+			# last notification, or if it is being manually checked
+			notified_certs.add(cert_info['path'])
+			check_cert(cert_info)
+
 	if update:
-		# update lastChecked for each cert that was checked	
+		# update lastNotified for each cert that was checked	
 		certs_file = open(conf.stored_certs_path(), 'w')	
 		for line in lines:
 			cert_info = json.loads(line)
-			if cert_info['path'] in checked_certs:	
-				cert_info['lastChecked'] = str(datetime.today())		
+			if cert_info['path'] in notified_certs:	
+				cert_info['lastNotified'] = str(datetime.today())		
 			certs_file.write(json.dumps(cert_info)+'\n')
 		certs_file.close()
+
+def list_certs():
+	"""	
+	Prints the path of each tracked cert.
+	
+	:param cert_info: dict containing tracked cert information
+	"""
+	certs_file = open(conf.stored_certs_path(), 'r')
+	lines = certs_file.readlines()	
+	certs_file.close()
+	for line in lines:		
+		cert_info = json.loads(line)
+		print cert_info['path'] + ' daily:' + cert_info['daily'] + ' weekly:' + cert_info['weekly']
 
 def check_cert(cert_info):
 	"""	
@@ -131,5 +149,4 @@ def check_cert(cert_info):
 	cert = load_cert(cert_info['path'])
 	exp_date = parse_UTC_date(cert.get_notAfter())
 	days = days_until_expiration(exp_date)
-	if days < cert_info['weekly']:
-		notify(cert, cert_info['path'], days)
+	notify(cert, cert_info['path'], days)
