@@ -65,7 +65,7 @@ setup(
     url = "https://github.com/ndmason1/acertive",
     packages=["acertive"],
     long_description=read("README.md"),
-    install_requires=["pyopenssl", "dateutil"],
+    install_requires=["pyopenssl", "python-dateutil"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: System Administrators",
