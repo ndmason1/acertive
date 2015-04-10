@@ -19,6 +19,10 @@ class InstallTasks(install):
         # create config file
         conf_file = 'config.cfg'
         data_dir = '/etc/acertive/'
+        if not os.path.isdir(data_dir):
+            os.mkdir(data_dir)
+            os.chown(data_dir, uid, gid)
+
         certs_file = 'acertive_tracked.json'
         # if not os.path.isfile(conf_file):
         conf = ConfigParser()
