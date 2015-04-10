@@ -7,6 +7,7 @@ from checker import (
 )
 import acertived
 import os
+import sys
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -15,6 +16,7 @@ def main():
 	parser.add_argument('-t', '--track', help='track a certificate')
 	parser.add_argument('-u', '--untrack', help='stop tracking a certificate')	
 	parser.add_argument('-c', '--clear', help='stop tracking all certificates', action='store_true')	
+	parser.add_argument('-m', '--manualcheck', help='manually check certificates and notify', action='store_true')
 
 	args = parser.parse_args()
 	
@@ -34,8 +36,12 @@ def main():
 		acertived.run()
 	elif args.stopd:		
 		acertived.stop()
-	else:
+	elif args.manualcheck:		
 		check_tracked_certs(update=False) # do not update lastChecked
+	else:
+		parser.print_help()
+		sys.exit(1)
+		
 
 if __name__ == '__main__':
 	main()
