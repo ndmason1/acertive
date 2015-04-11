@@ -25,28 +25,28 @@ Also required is the [setuptools installation framework](https://pypi.python.org
 # track certificate stored in <filename>, using threshold values for daily and weekly
 # notification if specified (uses default thresholds from configurations otherwise)
 # e.g. acertive -t /path/to/cert 10 50  <-- daily threshold of 10, weekly threshold of 50
-$ acertive -t | --track <filename> [daily, monthly]
+$ acertive -t, --track <filename> [<daily> <weekly>]
 
 # untrack certificate stored in <filename>
-$ acertive -u | --untrack <filename>
+$ acertive -u, --untrack <filename>
 
 # untrack all certificates
-$ acertive -c | --clear				
+$ acertive -c, --clear				
 
 # list tracked certificates and notification thresholds for each
-$ acertive -l | --list	
+$ acertive -l, --list	
 
 # start the daemon (checks certs once per day and notifies)
-$ acertive -s | --startd				
+$ acertive -s, --startd				
 
 # stop the daemon
-$ acertive -k | --stopd				
+$ acertive -k, --stopd				
 
 # manually checks all currently tracked certs and notifies
-$ acertive -m | --manualcheck
+$ acertive -m, --manualcheck
 
 # show available commands
-$ acertive -h | --help
+$ acertive -h, --help
 ```
 
 Note that a directory may also be passed to the -t option, in which case all certificate files (of a currently supported format) with that directory tree are tracked.
