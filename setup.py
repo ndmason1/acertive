@@ -49,7 +49,8 @@ class InstallTasks(install):
         open(os.path.join(data_dir,certs_file), 'a').close()
         os.chown(os.path.join(data_dir,certs_file), uid, gid)
 
-        install.run(self)
+        #install.run(self)
+        install.do_egg_install()
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
