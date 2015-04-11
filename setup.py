@@ -1,9 +1,9 @@
 import os
 from setuptools import setup
-from setuptools.command.install import install
+from setuptools.command.bdist_egg import bdist_egg
 from ConfigParser import ConfigParser
 
-class InstallTasks(install):
+class InstallTasks(bdist_egg):
     """ set up files """
     def run(self):        
         
@@ -49,8 +49,7 @@ class InstallTasks(install):
         open(os.path.join(data_dir,certs_file), 'a').close()
         os.chown(os.path.join(data_dir,certs_file), uid, gid)
 
-        #install.run(self)
-        install.do_egg_install()
+        bdist_egg.run(self)
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -66,7 +65,7 @@ setup(
     url = "https://github.com/ndmason1/acertive",
     packages=["acertive"],
     long_description=read("README.md"),
-    install_requires=["pyopenssl", "python-dateutil"],
+    install_requires=["pyopenssl", "python-dateutil", "python-daemon", ],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: System Administrators",
@@ -81,6 +80,6 @@ setup(
         ],
     },
     cmdclass={
-        'install': InstallTasks
+        'bdist_egg': InstallTasks
     }
 )

@@ -7,7 +7,6 @@ from datetime import timedelta
 import json
 import warnings
 
-
 def track_cert(path, daily=conf.daily(), weekly=conf.weekly()):
 	"""	
 	Add this certificate to the tracked certs file.
@@ -21,6 +20,8 @@ def track_cert(path, daily=conf.daily(), weekly=conf.weekly()):
 
 		fmts = ['.cer', '.der', '.crt', '.pem']	
 
+		init_date = datetime.today() - timedelta(days=8)
+
 		if os.path.isdir(path):
 			for root, dirs, files in os.walk(path):
 			    for fname in files:
@@ -30,7 +31,7 @@ def track_cert(path, daily=conf.daily(), weekly=conf.weekly()):
 								'path': os.path.join(root, fname), 
 								'weekly': str(weekly), 
 								'daily': str(daily),
-								'lastNotified': str(datetime.today())
+								'lastNotified': str(init_date)
 								}) + "\n")
 
 		elif os.path.isfile(path):
@@ -46,7 +47,7 @@ def track_cert(path, daily=conf.daily(), weekly=conf.weekly()):
 				'path': path, 
 				'weekly': str(weekly), 
 				'daily': str(daily),
-				'lastNotified': str(datetime.today())
+				'lastNotified': str(init_date)
 				}) + "\n")
 		else:
 			print "no such file: " + path
@@ -92,13 +93,14 @@ def check_tracked_certs(update=True):
 	"""
 	certs_file = open(conf.stored_certs_path(), 'r')
 	lines = certs_file.readlines()	
-	certs_file.close()
+	certs_file.close()	
+	notified_certs = set([])
+
 	for line in lines:		
 		cert_info = json.loads(line)
 
 		path = cert_info['path']
-		cert = load_cert(path)
-		notified_certs = set([])
+		cert = load_cert(path)		
 
 		exp_date = parse_UTC_date(cert.get_notAfter())
 		notified_date = parse_UTC_date(cert_info['lastNotified'])		
@@ -116,12 +118,12 @@ def check_tracked_certs(update=True):
 			notified_certs.add(cert_info['path'])
 			check_cert(cert_info)
 
-	if update:
+	if update:		
 		# update lastNotified for each cert that was checked	
 		certs_file = open(conf.stored_certs_path(), 'w')	
 		for line in lines:
-			cert_info = json.loads(line)
-			if cert_info['path'] in notified_certs:	
+			cert_info = json.loads(line)			
+			if cert_info['path'] in notified_certs:					
 				cert_info['lastNotified'] = str(datetime.today())		
 			certs_file.write(json.dumps(cert_info)+'\n')
 		certs_file.close()
