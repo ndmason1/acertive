@@ -53,4 +53,43 @@ Note that a directory may also be passed to the -t option, in which case all cer
 
 ## Configuration
 
-...coming soon...
+_**notifymethod**_
+
+Indicates what type of notification will be sent - email, syslog, or both.
+Possible values are **log**, **mail**, or **both**.
+Please note that enabling email notifications will require setting some of the other config fields appropriately.
+
+_**storedcertsfile**_
+
+The absolute path of the file used to store tracked certificate information.
+This is set to a default location upon installation, but can be changed so long as the file itself is moved or re-created.
+
+_**weeklythreshold**_
+
+The value to use for a certificate's weekly notification threshold, when none is specified upon tracking.
+Must be a number in days.
+
+_**dailythreshold**_
+
+The value to use for a certificate's daily notification threshold, when none is specified upon tracking.
+Must be a number in days.
+
+_**smtpservername**_
+
+The host name of the SMTP server used to relay email notifications.
+
+_**senderaddr**_
+
+The email address to use in the "Sender" field of email notifications.
+Adjust this so that notifications are not dropped by spam filters!
+
+_**notifyaddrs**_
+
+Addresses to send email notifications to.
+This can be a single address or a comma-separated list of addresses.
+
+_**usetls**_
+
+Indicates whether to attempt to establish a secure TLS session when sending email notifications.
+Possible values are **0** (disable) or **1** (enable).
+
