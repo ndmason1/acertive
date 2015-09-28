@@ -14,6 +14,8 @@ def track_cert(path, daily=conf.daily(), weekly=conf.weekly()):
 	tracked.
 
 	:param path: location of certificate or directry containing certificates
+	:param daily: number of days until expiration in which daily notifications activate
+	:param weekly: number of weeks until expiration in which weekly notifications activate
 	"""
 	with open(conf.stored_certs_path(), 'a+') as certs_file:
 		path = os.path.abspath(path)
@@ -78,8 +80,6 @@ def untrack_cert(path):
 def clear_certs():
 	"""	
 	Remove all certificates from the tracked certs file.
-
-	:param path: location of certificate
 	"""
 	certs_file = open(conf.stored_certs_path(), 'rw+')
 	certs_file.truncate()
@@ -89,7 +89,9 @@ def clear_certs():
 def check_tracked_certs(update=True):
 	"""	
 	Check each tracked certificate for expiration.
-	Initiate a notification if expiraiton falls within a threshold.
+	Initiate a notification if expiration falls within a threshold.
+
+	:param update: true if the lastNotified field of a cert should be updated, false otherwise
 	"""
 	certs_file = open(conf.stored_certs_path(), 'r')
 	lines = certs_file.readlines()	
@@ -131,8 +133,6 @@ def check_tracked_certs(update=True):
 def list_certs():
 	"""	
 	Prints the path of each tracked cert.
-	
-	:param cert_info: dict containing tracked cert information
 	"""
 	certs_file = open(conf.stored_certs_path(), 'r')
 	lines = certs_file.readlines()	
